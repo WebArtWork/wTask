@@ -62,6 +62,86 @@ const routes: Routes = [
 		children: [
 			/* user */
 			{
+				path: 'elements',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Elements'
+					}
+				},
+				loadChildren: () => import('./modules/taskelement/pages/elements/elements.module').then(m => m.ElementsModule)
+			}, 
+			{
+				path: 'pages',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Pages'
+					}
+				},
+				loadChildren: () => import('./modules/taskpage/pages/pages/pages.module').then(m => m.PagesModule)
+			}, 
+			{
+				path: 'tags',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Tags'
+					}
+				},
+				loadChildren: () => import('./modules/tasktag/pages/tags/tags.module').then(m => m.TagsModule)
+			}, 
+			{
+				path: 'stories',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Stories'
+					}
+				},
+				loadChildren: () => import('./modules/taskstory/pages/stories/stories.module').then(m => m.StoriesModule)
+			}, 
+			{
+				path: 'sprints',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Sprints'
+					}
+				},
+				loadChildren: () => import('./modules/tasksprint/pages/sprints/sprints.module').then(m => m.SprintsModule)
+			}, 
+			{
+				path: 'releases',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Releases'
+					}
+				},
+				loadChildren: () => import('./modules/taskrelease/pages/releases/releases.module').then(m => m.ReleasesModule)
+			}, 
+			{
+				path: 'tasks',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Tasks'
+					}
+				},
+				loadChildren: () => import('./modules/task/pages/tasks/tasks.module').then(m => m.TasksModule)
+			}, 
+			{
+				path: 'projects',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Projects'
+					}
+				},
+				loadChildren: () => import('./modules/taskproject/pages/projects/projects.module').then(m => m.ProjectsModule)
+			},
+			{
 				path: 'profile',
 				canActivate: [MetaGuard],
 				data: {
