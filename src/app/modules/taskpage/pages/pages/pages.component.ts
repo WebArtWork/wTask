@@ -7,6 +7,7 @@ import { TranslateService } from 'src/app/core/modules/translate/translate.servi
 import { FormInterface } from 'src/app/core/modules/form/interfaces/form.interface';
 import { taskpageFormComponents } from '../../formcomponents/taskpage.formcomponents';
 import { firstValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
 	templateUrl: './pages.component.html',
@@ -14,14 +15,23 @@ import { firstValueFrom } from 'rxjs';
 	standalone: false
 })
 export class PagesComponent {
+	project_id = this._router.url.includes('pages/')
+		? this._router.url.replace('/pages/', '')
+		: '';
+
 	columns = ['name', 'description'];
 
-	form: FormInterface = this._form.getForm('taskpage', taskpageFormComponents);
+	form: FormInterface = this._form.getForm(
+		'taskpage',
+		taskpageFormComponents
+	);
 
 	config = {
 		paginate: this.setRows.bind(this),
 		perPage: 20,
-		setPerPage: this._taskpageService.setPerPage.bind(this._taskpageService),
+		setPerPage: this._taskpageService.setPerPage.bind(
+			this._taskpageService
+		),
 		allDocs: false,
 		create: (): void => {
 			this._form.modal<Taskpage>(this.form, {
@@ -40,11 +50,13 @@ export class PagesComponent {
 			});
 		},
 		update: (doc: Taskpage): void => {
-			this._form.modal<Taskpage>(this.form, [], doc).then((updated: Taskpage) => {
-				this._core.copy(updated, doc);
+			this._form
+				.modal<Taskpage>(this.form, [], doc)
+				.then((updated: Taskpage) => {
+					this._core.copy(updated, doc);
 
-				this._taskpageService.update(doc);
-			});
+					this._taskpageService.update(doc);
+				});
 		},
 		delete: (doc: Taskpage): void => {
 			this._alert.question({
@@ -58,7 +70,9 @@ export class PagesComponent {
 					{
 						text: this._translate.translate('Common.Yes'),
 						callback: async (): Promise<void> => {
-							await firstValueFrom(this._taskpageService.delete(doc));
+							await firstValueFrom(
+								this._taskpageService.delete(doc)
+							);
 
 							this.setRows();
 						}
@@ -78,13 +92,13 @@ export class PagesComponent {
 			{
 				icon: 'playlist_add',
 				click: this._bulkManagement(),
-				class: 'playlist',
+				class: 'playlist'
 			},
 			{
 				icon: 'edit_note',
 				click: this._bulkManagement(false),
-				class: 'edit',
-			},
+				class: 'edit'
+			}
 		]
 	};
 
@@ -95,7 +109,8 @@ export class PagesComponent {
 		private _taskpageService: TaskpageService,
 		private _alert: AlertService,
 		private _form: FormService,
-		private _core: CoreService
+		private _core: CoreService,
+		private _router: Router
 	) {
 		this.setRows();
 	}
@@ -133,9 +148,12 @@ export class PagesComponent {
 						}
 					} else {
 						for (const taskpage of this.rows) {
-							if (!taskpages.find(
-								localTaskpage => localTaskpage._id === taskpage._id
-							)) {
+							if (
+								!taskpages.find(
+									(localTaskpage) =>
+										localTaskpage._id === taskpage._id
+								)
+							) {
 								await firstValueFrom(
 									this._taskpageService.delete(taskpage)
 								);
@@ -144,7 +162,8 @@ export class PagesComponent {
 
 						for (const taskpage of taskpages) {
 							const localTaskpage = this.rows.find(
-								localTaskpage => localTaskpage._id === taskpage._id
+								(localTaskpage) =>
+									localTaskpage._id === taskpage._id
 							);
 
 							if (localTaskpage) {
@@ -170,5 +189,9 @@ export class PagesComponent {
 
 	private _preCreate(taskpage: Taskpage): void {
 		taskpage.__created;
+
+		if (this.project_id) {
+			taskpage.project = this.project_id;
+		}
 	}
 }

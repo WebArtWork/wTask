@@ -7,6 +7,7 @@ import { TranslateService } from 'src/app/core/modules/translate/translate.servi
 import { FormInterface } from 'src/app/core/modules/form/interfaces/form.interface';
 import { taskreleaseFormComponents } from '../../formcomponents/taskrelease.formcomponents';
 import { firstValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
 	templateUrl: './releases.component.html',
@@ -14,14 +15,23 @@ import { firstValueFrom } from 'rxjs';
 	standalone: false
 })
 export class ReleasesComponent {
+	project_id = this._router.url.includes('releases/')
+		? this._router.url.replace('/releases/', '')
+		: '';
+
 	columns = ['name', 'description'];
 
-	form: FormInterface = this._form.getForm('taskrelease', taskreleaseFormComponents);
+	form: FormInterface = this._form.getForm(
+		'taskrelease',
+		taskreleaseFormComponents
+	);
 
 	config = {
 		paginate: this.setRows.bind(this),
 		perPage: 20,
-		setPerPage: this._taskreleaseService.setPerPage.bind(this._taskreleaseService),
+		setPerPage: this._taskreleaseService.setPerPage.bind(
+			this._taskreleaseService
+		),
 		allDocs: false,
 		create: (): void => {
 			this._form.modal<Taskrelease>(this.form, {
@@ -40,11 +50,13 @@ export class ReleasesComponent {
 			});
 		},
 		update: (doc: Taskrelease): void => {
-			this._form.modal<Taskrelease>(this.form, [], doc).then((updated: Taskrelease) => {
-				this._core.copy(updated, doc);
+			this._form
+				.modal<Taskrelease>(this.form, [], doc)
+				.then((updated: Taskrelease) => {
+					this._core.copy(updated, doc);
 
-				this._taskreleaseService.update(doc);
-			});
+					this._taskreleaseService.update(doc);
+				});
 		},
 		delete: (doc: Taskrelease): void => {
 			this._alert.question({
@@ -58,7 +70,9 @@ export class ReleasesComponent {
 					{
 						text: this._translate.translate('Common.Yes'),
 						callback: async (): Promise<void> => {
-							await firstValueFrom(this._taskreleaseService.delete(doc));
+							await firstValueFrom(
+								this._taskreleaseService.delete(doc)
+							);
 
 							this.setRows();
 						}
@@ -68,9 +82,19 @@ export class ReleasesComponent {
 		},
 		buttons: [
 			{
+				icon: 'task',
+				hrefFunc: (doc: Taskrelease): string => {
+					return '/tasks/' + doc.project + '/release/' + doc._id;
+				}
+			},
+			{
 				icon: 'cloud_download',
 				click: (doc: Taskrelease): void => {
-					this._form.modalUnique<Taskrelease>('taskrelease', 'url', doc);
+					this._form.modalUnique<Taskrelease>(
+						'taskrelease',
+						'url',
+						doc
+					);
 				}
 			}
 		],
@@ -78,13 +102,13 @@ export class ReleasesComponent {
 			{
 				icon: 'playlist_add',
 				click: this._bulkManagement(),
-				class: 'playlist',
+				class: 'playlist'
 			},
 			{
 				icon: 'edit_note',
 				click: this._bulkManagement(false),
-				class: 'edit',
-			},
+				class: 'edit'
+			}
 		]
 	};
 
@@ -95,7 +119,8 @@ export class ReleasesComponent {
 		private _taskreleaseService: TaskreleaseService,
 		private _alert: AlertService,
 		private _form: FormService,
-		private _core: CoreService
+		private _core: CoreService,
+		private _router: Router
 	) {
 		this.setRows();
 	}
@@ -106,11 +131,18 @@ export class ReleasesComponent {
 		this._core.afterWhile(
 			this,
 			() => {
-				this._taskreleaseService.get({ page }).subscribe((rows) => {
-					this.rows.splice(0, this.rows.length);
+				this._taskreleaseService
+					.get({
+						page,
+						query: this.project_id
+							? 'project=' + this.project_id
+							: ''
+					})
+					.subscribe((rows) => {
+						this.rows.splice(0, this.rows.length);
 
-					this.rows.push(...rows);
-				});
+						this.rows.push(...rows);
+					});
 			},
 			250
 		);
@@ -133,9 +165,12 @@ export class ReleasesComponent {
 						}
 					} else {
 						for (const taskrelease of this.rows) {
-							if (!taskreleases.find(
-								localTaskrelease => localTaskrelease._id === taskrelease._id
-							)) {
+							if (
+								!taskreleases.find(
+									(localTaskrelease) =>
+										localTaskrelease._id === taskrelease._id
+								)
+							) {
 								await firstValueFrom(
 									this._taskreleaseService.delete(taskrelease)
 								);
@@ -144,14 +179,17 @@ export class ReleasesComponent {
 
 						for (const taskrelease of taskreleases) {
 							const localTaskrelease = this.rows.find(
-								localTaskrelease => localTaskrelease._id === taskrelease._id
+								(localTaskrelease) =>
+									localTaskrelease._id === taskrelease._id
 							);
 
 							if (localTaskrelease) {
 								this._core.copy(taskrelease, localTaskrelease);
 
 								await firstValueFrom(
-									this._taskreleaseService.update(localTaskrelease)
+									this._taskreleaseService.update(
+										localTaskrelease
+									)
 								);
 							} else {
 								this._preCreate(taskrelease);
@@ -168,7 +206,11 @@ export class ReleasesComponent {
 		};
 	}
 
-	private _preCreate(taskrelease: Taskrelease): void {
-		taskrelease.__created;
+	private _preCreate(release: Taskrelease): void {
+		release.__created;
+
+		if (this.project_id) {
+			release.project = this.project_id;
+		}
 	}
 }

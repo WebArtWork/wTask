@@ -62,6 +62,16 @@ const routes: Routes = [
 		children: [
 			/* user */
 			{
+				path: 'modules',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Modules'
+					}
+				},
+				loadChildren: () => import('./modules/taskmodule/pages/modules/modules.module').then(m => m.ModulesModule)
+			}, 
+			{
 				path: 'task',
 				canActivate: [MetaGuard],
 				data: {

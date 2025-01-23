@@ -7,6 +7,7 @@ import { TranslateService } from 'src/app/core/modules/translate/translate.servi
 import { FormInterface } from 'src/app/core/modules/form/interfaces/form.interface';
 import { taskstoryFormComponents } from '../../formcomponents/taskstory.formcomponents';
 import { firstValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
 	templateUrl: './stories.component.html',
@@ -14,14 +15,23 @@ import { firstValueFrom } from 'rxjs';
 	standalone: false
 })
 export class StoriesComponent {
+	project_id = this._router.url.includes('stories/')
+		? this._router.url.replace('/stories/', '')
+		: '';
+
 	columns = ['name', 'description'];
 
-	form: FormInterface = this._form.getForm('taskstory', taskstoryFormComponents);
+	form: FormInterface = this._form.getForm(
+		'taskstory',
+		taskstoryFormComponents
+	);
 
 	config = {
 		paginate: this.setRows.bind(this),
 		perPage: 20,
-		setPerPage: this._taskstoryService.setPerPage.bind(this._taskstoryService),
+		setPerPage: this._taskstoryService.setPerPage.bind(
+			this._taskstoryService
+		),
 		allDocs: false,
 		create: (): void => {
 			this._form.modal<Taskstory>(this.form, {
@@ -40,11 +50,13 @@ export class StoriesComponent {
 			});
 		},
 		update: (doc: Taskstory): void => {
-			this._form.modal<Taskstory>(this.form, [], doc).then((updated: Taskstory) => {
-				this._core.copy(updated, doc);
+			this._form
+				.modal<Taskstory>(this.form, [], doc)
+				.then((updated: Taskstory) => {
+					this._core.copy(updated, doc);
 
-				this._taskstoryService.update(doc);
-			});
+					this._taskstoryService.update(doc);
+				});
 		},
 		delete: (doc: Taskstory): void => {
 			this._alert.question({
@@ -58,7 +70,9 @@ export class StoriesComponent {
 					{
 						text: this._translate.translate('Common.Yes'),
 						callback: async (): Promise<void> => {
-							await firstValueFrom(this._taskstoryService.delete(doc));
+							await firstValueFrom(
+								this._taskstoryService.delete(doc)
+							);
 
 							this.setRows();
 						}
@@ -78,13 +92,13 @@ export class StoriesComponent {
 			{
 				icon: 'playlist_add',
 				click: this._bulkManagement(),
-				class: 'playlist',
+				class: 'playlist'
 			},
 			{
 				icon: 'edit_note',
 				click: this._bulkManagement(false),
-				class: 'edit',
-			},
+				class: 'edit'
+			}
 		]
 	};
 
@@ -95,7 +109,8 @@ export class StoriesComponent {
 		private _taskstoryService: TaskstoryService,
 		private _alert: AlertService,
 		private _form: FormService,
-		private _core: CoreService
+		private _core: CoreService,
+		private _router: Router
 	) {
 		this.setRows();
 	}
@@ -106,11 +121,18 @@ export class StoriesComponent {
 		this._core.afterWhile(
 			this,
 			() => {
-				this._taskstoryService.get({ page }).subscribe((rows) => {
-					this.rows.splice(0, this.rows.length);
+				this._taskstoryService
+					.get({
+						page,
+						query: this.project_id
+							? 'project=' + this.project_id
+							: ''
+					})
+					.subscribe((rows) => {
+						this.rows.splice(0, this.rows.length);
 
-					this.rows.push(...rows);
-				});
+						this.rows.push(...rows);
+					});
 			},
 			250
 		);
@@ -133,9 +155,12 @@ export class StoriesComponent {
 						}
 					} else {
 						for (const taskstory of this.rows) {
-							if (!taskstorys.find(
-								localTaskstory => localTaskstory._id === taskstory._id
-							)) {
+							if (
+								!taskstorys.find(
+									(localTaskstory) =>
+										localTaskstory._id === taskstory._id
+								)
+							) {
 								await firstValueFrom(
 									this._taskstoryService.delete(taskstory)
 								);
@@ -144,14 +169,17 @@ export class StoriesComponent {
 
 						for (const taskstory of taskstorys) {
 							const localTaskstory = this.rows.find(
-								localTaskstory => localTaskstory._id === taskstory._id
+								(localTaskstory) =>
+									localTaskstory._id === taskstory._id
 							);
 
 							if (localTaskstory) {
 								this._core.copy(taskstory, localTaskstory);
 
 								await firstValueFrom(
-									this._taskstoryService.update(localTaskstory)
+									this._taskstoryService.update(
+										localTaskstory
+									)
 								);
 							} else {
 								this._preCreate(taskstory);
@@ -170,5 +198,9 @@ export class StoriesComponent {
 
 	private _preCreate(taskstory: Taskstory): void {
 		taskstory.__created;
+
+		if (this.project_id) {
+			taskstory.project = this.project_id;
+		}
 	}
 }

@@ -7,6 +7,7 @@ import { TranslateService } from 'src/app/core/modules/translate/translate.servi
 import { FormInterface } from 'src/app/core/modules/form/interfaces/form.interface';
 import { taskelementFormComponents } from '../../formcomponents/taskelement.formcomponents';
 import { firstValueFrom } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
 	templateUrl: './elements.component.html',
@@ -14,14 +15,23 @@ import { firstValueFrom } from 'rxjs';
 	standalone: false
 })
 export class ElementsComponent {
+	project_id = '';
+
+	page_id = '';
+
 	columns = ['name', 'description'];
 
-	form: FormInterface = this._form.getForm('taskelement', taskelementFormComponents);
+	form: FormInterface = this._form.getForm(
+		'taskelement',
+		taskelementFormComponents
+	);
 
 	config = {
 		paginate: this.setRows.bind(this),
 		perPage: 20,
-		setPerPage: this._taskelementService.setPerPage.bind(this._taskelementService),
+		setPerPage: this._taskelementService.setPerPage.bind(
+			this._taskelementService
+		),
 		allDocs: false,
 		create: (): void => {
 			this._form.modal<Taskelement>(this.form, {
@@ -40,11 +50,13 @@ export class ElementsComponent {
 			});
 		},
 		update: (doc: Taskelement): void => {
-			this._form.modal<Taskelement>(this.form, [], doc).then((updated: Taskelement) => {
-				this._core.copy(updated, doc);
+			this._form
+				.modal<Taskelement>(this.form, [], doc)
+				.then((updated: Taskelement) => {
+					this._core.copy(updated, doc);
 
-				this._taskelementService.update(doc);
-			});
+					this._taskelementService.update(doc);
+				});
 		},
 		delete: (doc: Taskelement): void => {
 			this._alert.question({
@@ -58,7 +70,9 @@ export class ElementsComponent {
 					{
 						text: this._translate.translate('Common.Yes'),
 						callback: async (): Promise<void> => {
-							await firstValueFrom(this._taskelementService.delete(doc));
+							await firstValueFrom(
+								this._taskelementService.delete(doc)
+							);
 
 							this.setRows();
 						}
@@ -70,7 +84,11 @@ export class ElementsComponent {
 			{
 				icon: 'cloud_download',
 				click: (doc: Taskelement): void => {
-					this._form.modalUnique<Taskelement>('taskelement', 'url', doc);
+					this._form.modalUnique<Taskelement>(
+						'taskelement',
+						'url',
+						doc
+					);
 				}
 			}
 		],
@@ -78,26 +96,33 @@ export class ElementsComponent {
 			{
 				icon: 'playlist_add',
 				click: this._bulkManagement(),
-				class: 'playlist',
+				class: 'playlist'
 			},
 			{
 				icon: 'edit_note',
 				click: this._bulkManagement(false),
-				class: 'edit',
-			},
+				class: 'edit'
+			}
 		]
 	};
 
 	rows: Taskelement[] = [];
 
 	constructor(
-		private _translate: TranslateService,
 		private _taskelementService: TaskelementService,
+		private _translate: TranslateService,
 		private _alert: AlertService,
 		private _form: FormService,
-		private _core: CoreService
+		private _core: CoreService,
+		private _route: ActivatedRoute
 	) {
-		this.setRows();
+		this._route.paramMap.subscribe((params) => {
+			this.project_id = params.get('project_id') || '';
+
+			this.page_id = params.get('page_id') || '';
+
+			this.setRows();
+		});
 	}
 
 	setRows(page = this._page): void {
@@ -106,11 +131,13 @@ export class ElementsComponent {
 		this._core.afterWhile(
 			this,
 			() => {
-				this._taskelementService.get({ page }).subscribe((rows) => {
-					this.rows.splice(0, this.rows.length);
+				this._taskelementService
+					.get({ page, query: this._query() })
+					.subscribe((rows) => {
+						this.rows.splice(0, this.rows.length);
 
-					this.rows.push(...rows);
-				});
+						this.rows.push(...rows);
+					});
 			},
 			250
 		);
@@ -133,9 +160,12 @@ export class ElementsComponent {
 						}
 					} else {
 						for (const taskelement of this.rows) {
-							if (!taskelements.find(
-								localTaskelement => localTaskelement._id === taskelement._id
-							)) {
+							if (
+								!taskelements.find(
+									(localTaskelement) =>
+										localTaskelement._id === taskelement._id
+								)
+							) {
 								await firstValueFrom(
 									this._taskelementService.delete(taskelement)
 								);
@@ -144,14 +174,17 @@ export class ElementsComponent {
 
 						for (const taskelement of taskelements) {
 							const localTaskelement = this.rows.find(
-								localTaskelement => localTaskelement._id === taskelement._id
+								(localTaskelement) =>
+									localTaskelement._id === taskelement._id
 							);
 
 							if (localTaskelement) {
 								this._core.copy(taskelement, localTaskelement);
 
 								await firstValueFrom(
-									this._taskelementService.update(localTaskelement)
+									this._taskelementService.update(
+										localTaskelement
+									)
 								);
 							} else {
 								this._preCreate(taskelement);
@@ -170,5 +203,27 @@ export class ElementsComponent {
 
 	private _preCreate(taskelement: Taskelement): void {
 		taskelement.__created;
+
+		if (this.project_id) {
+			taskelement.project = this.project_id;
+		}
+
+		if (this.page_id) {
+			taskelement.page = this.page_id;
+		}
+	}
+
+	private _query(): string {
+		let query = '';
+
+		if (this.project_id) {
+			query += (query ? '&' : '') + 'project=' + this.project_id;
+		}
+
+		if (this.page_id) {
+			query += (query ? '&' : '') + 'page=' + this.page_id;
+		}
+
+		return query;
 	}
 }

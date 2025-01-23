@@ -7,6 +7,7 @@ import { TranslateService } from 'src/app/core/modules/translate/translate.servi
 import { FormInterface } from 'src/app/core/modules/form/interfaces/form.interface';
 import { tasksprintFormComponents } from '../../formcomponents/tasksprint.formcomponents';
 import { firstValueFrom } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
 	templateUrl: './sprints.component.html',
@@ -14,14 +15,23 @@ import { firstValueFrom } from 'rxjs';
 	standalone: false
 })
 export class SprintsComponent {
+	project_id = this._router.url.includes('sprints/')
+		? this._router.url.replace('/sprints/', '')
+		: '';
+
 	columns = ['name', 'description'];
 
-	form: FormInterface = this._form.getForm('tasksprint', tasksprintFormComponents);
+	form: FormInterface = this._form.getForm(
+		'tasksprint',
+		tasksprintFormComponents
+	);
 
 	config = {
 		paginate: this.setRows.bind(this),
 		perPage: 20,
-		setPerPage: this._tasksprintService.setPerPage.bind(this._tasksprintService),
+		setPerPage: this._tasksprintService.setPerPage.bind(
+			this._tasksprintService
+		),
 		allDocs: false,
 		create: (): void => {
 			this._form.modal<Tasksprint>(this.form, {
@@ -40,11 +50,13 @@ export class SprintsComponent {
 			});
 		},
 		update: (doc: Tasksprint): void => {
-			this._form.modal<Tasksprint>(this.form, [], doc).then((updated: Tasksprint) => {
-				this._core.copy(updated, doc);
+			this._form
+				.modal<Tasksprint>(this.form, [], doc)
+				.then((updated: Tasksprint) => {
+					this._core.copy(updated, doc);
 
-				this._tasksprintService.update(doc);
-			});
+					this._tasksprintService.update(doc);
+				});
 		},
 		delete: (doc: Tasksprint): void => {
 			this._alert.question({
@@ -58,7 +70,9 @@ export class SprintsComponent {
 					{
 						text: this._translate.translate('Common.Yes'),
 						callback: async (): Promise<void> => {
-							await firstValueFrom(this._tasksprintService.delete(doc));
+							await firstValueFrom(
+								this._tasksprintService.delete(doc)
+							);
 
 							this.setRows();
 						}
@@ -68,9 +82,19 @@ export class SprintsComponent {
 		},
 		buttons: [
 			{
+				icon: 'task',
+				hrefFunc: (doc: Tasksprint): string => {
+					return '/tasks/' + doc.project + '/sprint/' + doc._id;
+				}
+			},
+			{
 				icon: 'cloud_download',
 				click: (doc: Tasksprint): void => {
-					this._form.modalUnique<Tasksprint>('tasksprint', 'url', doc);
+					this._form.modalUnique<Tasksprint>(
+						'tasksprint',
+						'url',
+						doc
+					);
 				}
 			}
 		],
@@ -78,13 +102,13 @@ export class SprintsComponent {
 			{
 				icon: 'playlist_add',
 				click: this._bulkManagement(),
-				class: 'playlist',
+				class: 'playlist'
 			},
 			{
 				icon: 'edit_note',
 				click: this._bulkManagement(false),
-				class: 'edit',
-			},
+				class: 'edit'
+			}
 		]
 	};
 
@@ -95,7 +119,8 @@ export class SprintsComponent {
 		private _tasksprintService: TasksprintService,
 		private _alert: AlertService,
 		private _form: FormService,
-		private _core: CoreService
+		private _core: CoreService,
+		private _router: Router
 	) {
 		this.setRows();
 	}
@@ -106,11 +131,18 @@ export class SprintsComponent {
 		this._core.afterWhile(
 			this,
 			() => {
-				this._tasksprintService.get({ page }).subscribe((rows) => {
-					this.rows.splice(0, this.rows.length);
+				this._tasksprintService
+					.get({
+						page,
+						query: this.project_id
+							? 'project=' + this.project_id
+							: ''
+					})
+					.subscribe((rows) => {
+						this.rows.splice(0, this.rows.length);
 
-					this.rows.push(...rows);
-				});
+						this.rows.push(...rows);
+					});
 			},
 			250
 		);
@@ -133,9 +165,12 @@ export class SprintsComponent {
 						}
 					} else {
 						for (const tasksprint of this.rows) {
-							if (!tasksprints.find(
-								localTasksprint => localTasksprint._id === tasksprint._id
-							)) {
+							if (
+								!tasksprints.find(
+									(localTasksprint) =>
+										localTasksprint._id === tasksprint._id
+								)
+							) {
 								await firstValueFrom(
 									this._tasksprintService.delete(tasksprint)
 								);
@@ -144,14 +179,17 @@ export class SprintsComponent {
 
 						for (const tasksprint of tasksprints) {
 							const localTasksprint = this.rows.find(
-								localTasksprint => localTasksprint._id === tasksprint._id
+								(localTasksprint) =>
+									localTasksprint._id === tasksprint._id
 							);
 
 							if (localTasksprint) {
 								this._core.copy(tasksprint, localTasksprint);
 
 								await firstValueFrom(
-									this._tasksprintService.update(localTasksprint)
+									this._tasksprintService.update(
+										localTasksprint
+									)
 								);
 							} else {
 								this._preCreate(tasksprint);
@@ -170,5 +208,9 @@ export class SprintsComponent {
 
 	private _preCreate(tasksprint: Tasksprint): void {
 		tasksprint.__created;
+
+		if (this.project_id) {
+			tasksprint.project = this.project_id;
+		}
 	}
 }

@@ -7,6 +7,22 @@ const routes: Routes = [
 	{
 		path: '',
 		component: TasksComponent
+	},
+	{
+		path: ':project_id',
+		component: TasksComponent
+	},
+	{
+		path: ':project_id/release/:release_id',
+		component: TasksComponent
+	},
+	{
+		path: ':project_id/sprint/:sprint_id',
+		component: TasksComponent
+	},
+	{
+		path: ':project_id/tag/:tag_id',
+		component: TasksComponent
 	}
 ];
 

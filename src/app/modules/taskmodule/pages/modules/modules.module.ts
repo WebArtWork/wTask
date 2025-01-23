@@ -1,22 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CoreModule } from 'src/app/core/core.module';
-import { StoriesComponent } from './stories.component';
+import { ModulesComponent } from './modules.component';
 import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
 	{
 		path: '',
-		component: StoriesComponent
+		component: ModulesComponent
 	},
 	{
 		path: ':project_id',
-		component: StoriesComponent
+		component: ModulesComponent
 	}
 ];
 
 @NgModule({
 	imports: [RouterModule.forChild(routes), CoreModule],
-	declarations: [StoriesComponent],
+	declarations: [ModulesComponent],
 	providers: []
 })
-export class StoriesModule {}
+export class ModulesModule {}

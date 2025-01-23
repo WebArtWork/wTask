@@ -7,6 +7,7 @@ import { TranslateService } from 'src/app/core/modules/translate/translate.servi
 import { FormInterface } from 'src/app/core/modules/form/interfaces/form.interface';
 import { taskFormComponents } from '../../formcomponents/task.formcomponents';
 import { firstValueFrom } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
 	templateUrl: './tasks.component.html',
@@ -23,22 +24,27 @@ export class TasksComponent {
 		perPage: 20,
 		setPerPage: this._taskService.setPerPage.bind(this._taskService),
 		allDocs: false,
-		create: (): void => {
-			this._form.modal<Task>(this.form, {
-				label: 'Create',
-				click: async (created: unknown, close: () => void) => {
-					close();
+		create: this._router.url.includes('tasks/')
+			? (): void => {
+					this._form.modal<Task>(this.form, {
+						label: 'Create',
+						click: async (
+							created: unknown,
+							close: () => void
+						): Promise<void> => {
+							close();
 
-					this._preCreate(created as Task);
+							this._preCreate(created as Task);
 
-					await firstValueFrom(
-						this._taskService.create(created as Task)
-					);
+							await firstValueFrom(
+								this._taskService.create(created as Task)
+							);
 
-					this.setRows();
-				}
-			});
-		},
+							this.setRows();
+						}
+					});
+			  }
+			: null,
 		update: (doc: Task): void => {
 			this._form.modal<Task>(this.form, [], doc).then((updated: Task) => {
 				this._core.copy(updated, doc);
@@ -68,6 +74,12 @@ export class TasksComponent {
 		},
 		buttons: [
 			{
+				icon: 'task_alt',
+				hrefFunc: (doc: Task): string => {
+					return '/task/' + doc._id;
+				}
+			},
+			{
 				icon: 'cloud_download',
 				click: (doc: Task): void => {
 					this._form.modalUnique<Task>('task', 'url', doc);
@@ -78,26 +90,46 @@ export class TasksComponent {
 			{
 				icon: 'playlist_add',
 				click: this._bulkManagement(),
-				class: 'playlist',
+				class: 'playlist'
 			},
 			{
 				icon: 'edit_note',
 				click: this._bulkManagement(false),
-				class: 'edit',
-			},
+				class: 'edit'
+			}
 		]
 	};
 
 	rows: Task[] = [];
 
+	project_id = '';
+
+	release_id = '';
+
+	sprint_id = '';
+
+	tag_id = '';
+
 	constructor(
 		private _translate: TranslateService,
 		private _taskService: TaskService,
+		private _route: ActivatedRoute,
 		private _alert: AlertService,
 		private _form: FormService,
-		private _core: CoreService
+		private _core: CoreService,
+		private _router: Router
 	) {
 		this.setRows();
+
+		this._route.paramMap.subscribe((params) => {
+			this.project_id = params.get('project_id') || '';
+
+			this.release_id = params.get('release_id') || '';
+
+			this.sprint_id = params.get('sprint_id') || '';
+
+			this.tag_id = params.get('tag_id') || '';
+		});
 	}
 
 	setRows(page = this._page): void {
@@ -106,11 +138,13 @@ export class TasksComponent {
 		this._core.afterWhile(
 			this,
 			() => {
-				this._taskService.get({ page }).subscribe((rows) => {
-					this.rows.splice(0, this.rows.length);
+				this._taskService
+					.get({ page, query: this._query() })
+					.subscribe((rows) => {
+						this.rows.splice(0, this.rows.length);
 
-					this.rows.push(...rows);
-				});
+						this.rows.push(...rows);
+					});
 			},
 			250
 		);
@@ -133,9 +167,11 @@ export class TasksComponent {
 						}
 					} else {
 						for (const task of this.rows) {
-							if (!tasks.find(
-								localTask => localTask._id === task._id
-							)) {
+							if (
+								!tasks.find(
+									(localTask) => localTask._id === task._id
+								)
+							) {
 								await firstValueFrom(
 									this._taskService.delete(task)
 								);
@@ -144,7 +180,7 @@ export class TasksComponent {
 
 						for (const task of tasks) {
 							const localTask = this.rows.find(
-								localTask => localTask._id === task._id
+								(localTask) => localTask._id === task._id
 							);
 
 							if (localTask) {
@@ -169,6 +205,44 @@ export class TasksComponent {
 	}
 
 	private _preCreate(task: Task): void {
-		task.__created;
+		task.__created = false;
+
+		if (this.project_id) {
+			task.project = this.project_id;
+		}
+
+		if (this.release_id) {
+			task.release = this.release_id;
+		}
+
+		if (this.sprint_id) {
+			task.sprint = this.sprint_id;
+		}
+
+		if (this.tag_id) {
+			task.tag = this.tag_id;
+		}
+	}
+
+	private _query(): string {
+		let query = '';
+
+		if (this.project_id) {
+			query += (query ? '&' : '') + 'project=' + this.project_id;
+		}
+
+		if (this.release_id) {
+			query += (query ? '&' : '') + 'release=' + this.release_id;
+		}
+
+		if (this.sprint_id) {
+			query += (query ? '&' : '') + 'sprint=' + this.sprint_id;
+		}
+
+		if (this.tag_id) {
+			query += (query ? '&' : '') + 'tag=' + this.tag_id;
+		}
+
+		return query;
 	}
 }

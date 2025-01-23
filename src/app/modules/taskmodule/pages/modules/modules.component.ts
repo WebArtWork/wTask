@@ -1,62 +1,67 @@
 import { Component } from '@angular/core';
 import { AlertService, CoreService } from 'wacom';
-import { TasktagService } from '../../services/tasktag.service';
-import { Tasktag } from '../../interfaces/tasktag.interface';
+import { TaskmoduleService } from '../../services/taskmodule.service';
+import { Taskmodule } from '../../interfaces/taskmodule.interface';
 import { FormService } from 'src/app/core/modules/form/form.service';
 import { TranslateService } from 'src/app/core/modules/translate/translate.service';
 import { FormInterface } from 'src/app/core/modules/form/interfaces/form.interface';
-import { tasktagFormComponents } from '../../formcomponents/tasktag.formcomponents';
+import { taskmoduleFormComponents } from '../../formcomponents/taskmodule.formcomponents';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
-	templateUrl: './tags.component.html',
-	styleUrls: ['./tags.component.scss'],
+	templateUrl: './modules.component.html',
+	styleUrls: ['./modules.component.scss'],
 	standalone: false
 })
-export class TagsComponent {
-	project_id = this._router.url.includes('tags/')
-		? this._router.url.replace('/tags/', '')
+export class ModulesComponent {
+	project_id = this._router.url.includes('modules/')
+		? this._router.url.replace('/modules/', '')
 		: '';
 
 	columns = ['name', 'description'];
 
-	form: FormInterface = this._form.getForm('tasktag', tasktagFormComponents);
+	form: FormInterface = this._form.getForm(
+		'taskmodule',
+		taskmoduleFormComponents
+	);
 
 	config = {
 		paginate: this.setRows.bind(this),
 		perPage: 20,
-		setPerPage: this._tasktagService.setPerPage.bind(this._tasktagService),
+		setPerPage: this._taskmoduleService.setPerPage.bind(
+			this._taskmoduleService
+		),
 		allDocs: false,
 		create: (): void => {
-			this._form.modal<Tasktag>(this.form, {
+			this._form.modal<Taskmodule>(this.form, {
 				label: 'Create',
 				click: async (created: unknown, close: () => void) => {
 					close();
 
-					this._preCreate(created as Tasktag);
+					this._preCreate(created as Taskmodule);
 
 					await firstValueFrom(
-						this._tasktagService.create(created as Tasktag)
+						this._taskmoduleService.create(created as Taskmodule)
 					);
 
 					this.setRows();
 				}
 			});
 		},
-		update: (doc: Tasktag): void => {
+		update: (doc: Taskmodule): void => {
 			this._form
-				.modal<Tasktag>(this.form, [], doc)
-				.then((updated: Tasktag) => {
+				.modal<Taskmodule>(this.form, [], doc)
+				.then((updated: Taskmodule) => {
 					this._core.copy(updated, doc);
 
-					this._tasktagService.update(doc);
+					this._taskmoduleService.update(doc);
 				});
 		},
-		delete: (doc: Tasktag): void => {
+		delete: (doc: Taskmodule): void => {
 			this._alert.question({
 				text: this._translate.translate(
-					'Common.Are you sure you want to delete this tasktag?'
+					'Common.Are you sure you want to delete this taskmodule?'
 				),
 				buttons: [
 					{
@@ -66,7 +71,7 @@ export class TagsComponent {
 						text: this._translate.translate('Common.Yes'),
 						callback: async (): Promise<void> => {
 							await firstValueFrom(
-								this._tasktagService.delete(doc)
+								this._taskmoduleService.delete(doc)
 							);
 
 							this.setRows();
@@ -77,15 +82,13 @@ export class TagsComponent {
 		},
 		buttons: [
 			{
-				icon: 'task',
-				hrefFunc: (doc: Tasktag): string => {
-					return '/tasks/' + doc.project + '/tag/' + doc._id;
-				}
-			},
-			{
 				icon: 'cloud_download',
-				click: (doc: Tasktag): void => {
-					this._form.modalUnique<Tasktag>('tasktag', 'url', doc);
+				click: (doc: Taskmodule): void => {
+					this._form.modalUnique<Taskmodule>(
+						'taskmodule',
+						'url',
+						doc
+					);
 				}
 			}
 		],
@@ -103,11 +106,11 @@ export class TagsComponent {
 		]
 	};
 
-	rows: Tasktag[] = [];
+	rows: Taskmodule[] = [];
 
 	constructor(
 		private _translate: TranslateService,
-		private _tasktagService: TasktagService,
+		private _taskmoduleService: TaskmoduleService,
 		private _alert: AlertService,
 		private _form: FormService,
 		private _core: CoreService,
@@ -122,7 +125,7 @@ export class TagsComponent {
 		this._core.afterWhile(
 			this,
 			() => {
-				this._tasktagService
+				this._taskmoduleService
 					.get({
 						page,
 						query: this.project_id
@@ -144,47 +147,49 @@ export class TagsComponent {
 	private _bulkManagement(create = true): () => void {
 		return (): void => {
 			this._form
-				.modalDocs<Tasktag>(create ? [] : this.rows)
-				.then(async (tasktags: Tasktag[]) => {
+				.modalDocs<Taskmodule>(create ? [] : this.rows)
+				.then(async (taskmodules: Taskmodule[]) => {
 					if (create) {
-						for (const tasktag of tasktags) {
-							this._preCreate(tasktag);
+						for (const taskmodule of taskmodules) {
+							this._preCreate(taskmodule);
 
 							await firstValueFrom(
-								this._tasktagService.create(tasktag)
+								this._taskmoduleService.create(taskmodule)
 							);
 						}
 					} else {
-						for (const tasktag of this.rows) {
+						for (const taskmodule of this.rows) {
 							if (
-								!tasktags.find(
-									(localTasktag) =>
-										localTasktag._id === tasktag._id
+								!taskmodules.find(
+									(localTaskmodule) =>
+										localTaskmodule._id === taskmodule._id
 								)
 							) {
 								await firstValueFrom(
-									this._tasktagService.delete(tasktag)
+									this._taskmoduleService.delete(taskmodule)
 								);
 							}
 						}
 
-						for (const tasktag of tasktags) {
-							const localTasktag = this.rows.find(
-								(localTasktag) =>
-									localTasktag._id === tasktag._id
+						for (const taskmodule of taskmodules) {
+							const localTaskmodule = this.rows.find(
+								(localTaskmodule) =>
+									localTaskmodule._id === taskmodule._id
 							);
 
-							if (localTasktag) {
-								this._core.copy(tasktag, localTasktag);
+							if (localTaskmodule) {
+								this._core.copy(taskmodule, localTaskmodule);
 
 								await firstValueFrom(
-									this._tasktagService.update(localTasktag)
+									this._taskmoduleService.update(
+										localTaskmodule
+									)
 								);
 							} else {
-								this._preCreate(tasktag);
+								this._preCreate(taskmodule);
 
 								await firstValueFrom(
-									this._tasktagService.create(tasktag)
+									this._taskmoduleService.create(taskmodule)
 								);
 							}
 						}
@@ -195,11 +200,11 @@ export class TagsComponent {
 		};
 	}
 
-	private _preCreate(tasktag: Tasktag): void {
-		tasktag.__created;
+	private _preCreate(taskmodule: Taskmodule): void {
+		taskmodule.__created;
 
 		if (this.project_id) {
-			tasktag.project = this.project_id;
+			taskmodule.project = this.project_id;
 		}
 	}
 }

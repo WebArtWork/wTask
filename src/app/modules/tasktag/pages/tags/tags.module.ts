@@ -7,6 +7,10 @@ const routes: Routes = [
 	{
 		path: '',
 		component: TagsComponent
+	},
+	{
+		path: ':project_id',
+		component: TagsComponent
 	}
 ];
 

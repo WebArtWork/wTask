@@ -168,6 +168,16 @@
 					<span class="material-icons">widgets</span>
 					<span translate>Theme.Elements</span>
 				</a>
+				<a
+					[routerLinkActiveOptions]="{ exact: true }"
+					routerLinkActive="_activeLink"
+					routerLink="/modules"
+					class="nav__burger-link"
+					(click)="hideSidebar()"
+				>
+					<span class="material-icons">apps</span>
+					<span translate>Theme.Modules</span>
+				</a>
 				<hr />
 			</div>
 		</div>

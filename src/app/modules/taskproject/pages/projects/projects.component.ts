@@ -15,7 +15,10 @@ import { taskprojectFormComponents } from '../../formcomponents/taskproject.form
 export class ProjectsComponent {
 	columns = ['name', 'description'];
 
-	form: FormInterface = this._form.getForm('taskproject', taskprojectFormComponents);
+	form: FormInterface = this._form.getForm(
+		'taskproject',
+		taskprojectFormComponents
+	);
 
 	config = {
 		create: (): void => {
@@ -31,11 +34,13 @@ export class ProjectsComponent {
 			});
 		},
 		update: (doc: Taskproject): void => {
-			this._form.modal<Taskproject>(this.form, [], doc).then((updated: Taskproject) => {
-				this._core.copy(updated, doc);
+			this._form
+				.modal<Taskproject>(this.form, [], doc)
+				.then((updated: Taskproject) => {
+					this._core.copy(updated, doc);
 
-				this._taskprojectService.update(doc);
-			});
+					this._taskprojectService.update(doc);
+				});
 		},
 		delete: (doc: Taskproject): void => {
 			this._alert.question({
@@ -57,9 +62,61 @@ export class ProjectsComponent {
 		},
 		buttons: [
 			{
+				icon: 'task',
+				hrefFunc: (doc: Taskproject): string => {
+					return '/tasks/' + doc._id;
+				}
+			},
+			{
+				icon: 'publish',
+				hrefFunc: (doc: Taskproject): string => {
+					return '/releases/' + doc._id;
+				}
+			},
+			{
+				icon: 'track_changes',
+				hrefFunc: (doc: Taskproject): string => {
+					return '/sprints/' + doc._id;
+				}
+			},
+			{
+				icon: 'label',
+				hrefFunc: (doc: Taskproject): string => {
+					return '/tags/' + doc._id;
+				}
+			},
+			{
+				icon: 'checklist',
+				hrefFunc: (doc: Taskproject): string => {
+					return '/stories/' + doc._id;
+				}
+			},
+			{
+				icon: 'view_agenda',
+				hrefFunc: (doc: Taskproject): string => {
+					return '/pages/' + doc._id;
+				}
+			},
+			{
+				icon: 'widgets',
+				hrefFunc: (doc: Taskproject): string => {
+					return '/elements/' + doc._id;
+				}
+			},
+			{
+				icon: 'apps',
+				hrefFunc: (doc: Taskproject): string => {
+					return '/modules/' + doc._id;
+				}
+			},
+			{
 				icon: 'cloud_download',
 				click: (doc: Taskproject): void => {
-					this._form.modalUnique<Taskproject>('taskproject', 'url', doc);
+					this._form.modalUnique<Taskproject>(
+						'taskproject',
+						'url',
+						doc
+					);
 				}
 			}
 		],
@@ -67,13 +124,13 @@ export class ProjectsComponent {
 			{
 				icon: 'playlist_add',
 				click: this._bulkManagement(),
-				class: 'playlist',
+				class: 'playlist'
 			},
 			{
 				icon: 'edit_note',
 				click: this._bulkManagement(false),
-				class: 'edit',
-			},
+				class: 'edit'
+			}
 		]
 	};
 
@@ -102,22 +159,28 @@ export class ProjectsComponent {
 						}
 					} else {
 						for (const taskproject of this.rows) {
-							if (!taskprojects.find(
-								localTaskproject => localTaskproject._id === taskproject._id
-							)) {
+							if (
+								!taskprojects.find(
+									(localTaskproject) =>
+										localTaskproject._id === taskproject._id
+								)
+							) {
 								this._taskprojectService.delete(taskproject);
 							}
 						}
 
 						for (const taskproject of taskprojects) {
 							const localTaskproject = this.rows.find(
-								localTaskproject => localTaskproject._id === taskproject._id
+								(localTaskproject) =>
+									localTaskproject._id === taskproject._id
 							);
 
 							if (localTaskproject) {
 								this._core.copy(taskproject, localTaskproject);
 
-								this._taskprojectService.update(localTaskproject);
+								this._taskprojectService.update(
+									localTaskproject
+								);
 							} else {
 								this._preCreate(taskproject);
 
