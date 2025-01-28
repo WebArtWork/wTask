@@ -19,7 +19,7 @@
 		</ul>
 	</nav>
 
-	<div class="main" [class.showTable]="showSidebar">
+	<div class="main" [class.documents-wrapper--open]="isMenuOpen">
 		<div class="fade" [@showInOut]="showSidebar" *ngIf="showSidebar"></div>
 		<div class="nav__burger _active" [class._active]="showSidebar">
 			<div class="nav__burger-list">
