@@ -8,9 +8,11 @@ import { TaskprojectService } from 'src/app/modules/taskproject/services/taskpro
 	standalone: false
 })
 export class ProjectsComponent {
+	isMenuOpen = false;
+
 	get projects(): Taskproject[] {
 		return this._taskprojectService.taskprojects;
 	}
-	isMenuOpen = false
+
 	constructor(private _taskprojectService: TaskprojectService) {}
 }
