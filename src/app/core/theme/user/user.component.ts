@@ -12,6 +12,8 @@ import { Component } from '@angular/core';
     standalone: false
 })
 export class UserComponent {
+	isMenuOpen = false
+
 	readonly url = environment.url;
 	forceAvatarUrl = '';
 	showSidebar = false;

@@ -255,11 +255,10 @@ wform {
     height: 27px;
     position: relative;
 }
-
 .burger {
     height: 5px;
     width: 100%;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--c-text-primary);
     transition: all .3s;
 }
 
@@ -269,7 +268,7 @@ wform {
     width: 100%;
     height: 5px;
     display: block;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--c-text-primary);
     transition: all .3s;
     position: absolute;
     left: 0;
@@ -287,11 +286,12 @@ wform {
 
 .documents{
     &-wrapper{
-        overflow-y: scroll;
+       //overflow-y: scroll;
         height: 100vh;
-        background: #282626;
+        background: var(--c-bg-primary);
         color: #fff;
         position: relative;
+        /*
         &--open{
             overflow-y: unset;
             &::before{
@@ -304,13 +304,13 @@ wform {
                 left: 0;
             }
         }
+        */
     }
     &-container{
         max-width: 1260px;
         width: 100%;
         margin: 0 auto;
         height: 100%;
-        padding: 0 15px;
     }
     &-list{
         display: flex;
@@ -318,12 +318,13 @@ wform {
     }
     &-main{
         flex: 1 0;
+        padding-left: 280px;
         &-content{
             padding: 15px;
         }
         &-row{
             padding: 10px 20px;
-            background: #1c1b1b;
+            background: var(--c-bg-secondary);
             margin-bottom: 20px;
             border-radius: 10px;
         }
@@ -331,15 +332,20 @@ wform {
     &-sidebar{
         flex: 0 0 280px;
         max-width: 280px;
-        background: #1c1b1b;
-        height: calc(100vh - 10px);
-        border-radius: 0 0 12px 12px;
-        position: sticky;
-        top: 0;
+        background: var(--c-bg-secondary);
+        height: calc(100vh - 100px);
+        border-radius: 12px;
+        position: fixed;
+        top: 80px;
         &-content{
             padding: 15px;
             height: 100%;
             overflow-y: scroll;
+            scrollbar-width: none;
+            &::-webkit-scrollbar{
+                width: 0px; /* Для вертикальной полосы прокрутки */
+                height: 0px; /* Для горизонтальной полосы прокрутки */
+            }
         }
         &__img{
             img{
@@ -352,6 +358,10 @@ wform {
         &__title{
             font-weight: 600;
             padding: 15px 0 5px 0;
+            color: var(--c-text-primary);
+        }
+        &__description{
+            color: var(--c-text-primary);
         }
     }
     &-tags{
@@ -415,12 +425,20 @@ wform {
         &__title{
             font-size: 20px;
             font-weight: 600;
+            color: var(--c-text-primary);
+        }
+        &__description{
+            color: var(--c-text-primary);
         }
     }
     &__title{
         font-size: 20px;
         font-weight: 600;
         padding-bottom: 10px;
+        color: var(--c-text-primary);
+    }
+    &__description{
+        color: var(--c-text-primary);
     }
     &__btn{
         max-width: 200px;
@@ -445,6 +463,10 @@ wform {
         flex: 0 0 240px;
         max-width: 240px;
     }
+    .documents-main {
+        flex: 1 0;
+        padding-left: 236px;
+    }
 }
 @media screen and (max-width: 991px) {
     .documents-sidebar {
@@ -452,24 +474,30 @@ wform {
         max-width: 100%;
         height: 0;
         border-radius: 12px;
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         margin: 15px;
         transition: all .3s;
         overflow: hidden;
         &--open{
-            height: calc(100% - 25px);
+            height: calc(100% - 75px);
         }
+    }
+    .documents-sidebar-content {
+        padding: 15px 30px 15px 15px;
+    }
+    .documents-main {
+        padding-left: 0;
     }
     .burger-wrap {
         display: flex;
         align-items: center;
         position: fixed;
         z-index: 3;
-        right: 40px;
-        transform: translateX(50%);
-        top: 35px;
+        right: 3px;
+        transform: translateX(-50%);
+        top: 8px;
     }
 
     .burger--close {
@@ -478,7 +506,7 @@ wform {
     }
 
     .burger--close::before {
-        transform: translateY(-1px) rotate(45deg);
+        transform: translateY(0px) rotate(45deg);
     }
 
     .burger--close::after {
@@ -488,6 +516,12 @@ wform {
     .burger--close::after,
     .burger--close::before {
         transform-origin: 0;
+    }
+    .documents-container {
+        padding: 30px 0 0 0;
+    }
+    .documents-main-row{
+        padding: 10px 30px 20px 15px;
     }
 }
 @media screen and (max-width: 767px) {
