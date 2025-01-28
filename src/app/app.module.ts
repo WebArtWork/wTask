@@ -62,6 +62,19 @@ const routes: Routes = [
 		children: [
 			/* user */
 			{
+				path: 'mineprojects',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Projects'
+					}
+				},
+				loadChildren: () =>
+					import('./pages/user/projects/projects.module').then(
+						(m) => m.ProjectsModule
+					)
+			},
+			{
 				path: 'modules',
 				canActivate: [MetaGuard],
 				data: {
@@ -69,8 +82,11 @@ const routes: Routes = [
 						title: 'Modules'
 					}
 				},
-				loadChildren: () => import('./modules/taskmodule/pages/modules/modules.module').then(m => m.ModulesModule)
-			}, 
+				loadChildren: () =>
+					import(
+						'./modules/taskmodule/pages/modules/modules.module'
+					).then((m) => m.ModulesModule)
+			},
 			{
 				path: 'task',
 				canActivate: [MetaGuard],
@@ -79,8 +95,11 @@ const routes: Routes = [
 						title: 'Task'
 					}
 				},
-				loadChildren: () => import('./pages/user/task/task.module').then(m => m.TaskModule)
-			}, 
+				loadChildren: () =>
+					import('./pages/user/task/task.module').then(
+						(m) => m.TaskModule
+					)
+			},
 			{
 				path: 'elements',
 				canActivate: [MetaGuard],
@@ -89,8 +108,11 @@ const routes: Routes = [
 						title: 'Elements'
 					}
 				},
-				loadChildren: () => import('./modules/taskelement/pages/elements/elements.module').then(m => m.ElementsModule)
-			}, 
+				loadChildren: () =>
+					import(
+						'./modules/taskelement/pages/elements/elements.module'
+					).then((m) => m.ElementsModule)
+			},
 			{
 				path: 'pages',
 				canActivate: [MetaGuard],
@@ -99,8 +121,11 @@ const routes: Routes = [
 						title: 'Pages'
 					}
 				},
-				loadChildren: () => import('./modules/taskpage/pages/pages/pages.module').then(m => m.PagesModule)
-			}, 
+				loadChildren: () =>
+					import('./modules/taskpage/pages/pages/pages.module').then(
+						(m) => m.PagesModule
+					)
+			},
 			{
 				path: 'tags',
 				canActivate: [MetaGuard],
@@ -109,8 +134,11 @@ const routes: Routes = [
 						title: 'Tags'
 					}
 				},
-				loadChildren: () => import('./modules/tasktag/pages/tags/tags.module').then(m => m.TagsModule)
-			}, 
+				loadChildren: () =>
+					import('./modules/tasktag/pages/tags/tags.module').then(
+						(m) => m.TagsModule
+					)
+			},
 			{
 				path: 'stories',
 				canActivate: [MetaGuard],
@@ -119,8 +147,11 @@ const routes: Routes = [
 						title: 'Stories'
 					}
 				},
-				loadChildren: () => import('./modules/taskstory/pages/stories/stories.module').then(m => m.StoriesModule)
-			}, 
+				loadChildren: () =>
+					import(
+						'./modules/taskstory/pages/stories/stories.module'
+					).then((m) => m.StoriesModule)
+			},
 			{
 				path: 'sprints',
 				canActivate: [MetaGuard],
@@ -129,8 +160,11 @@ const routes: Routes = [
 						title: 'Sprints'
 					}
 				},
-				loadChildren: () => import('./modules/tasksprint/pages/sprints/sprints.module').then(m => m.SprintsModule)
-			}, 
+				loadChildren: () =>
+					import(
+						'./modules/tasksprint/pages/sprints/sprints.module'
+					).then((m) => m.SprintsModule)
+			},
 			{
 				path: 'releases',
 				canActivate: [MetaGuard],
@@ -139,8 +173,11 @@ const routes: Routes = [
 						title: 'Releases'
 					}
 				},
-				loadChildren: () => import('./modules/taskrelease/pages/releases/releases.module').then(m => m.ReleasesModule)
-			}, 
+				loadChildren: () =>
+					import(
+						'./modules/taskrelease/pages/releases/releases.module'
+					).then((m) => m.ReleasesModule)
+			},
 			{
 				path: 'tasks',
 				canActivate: [MetaGuard],
@@ -149,8 +186,11 @@ const routes: Routes = [
 						title: 'Tasks'
 					}
 				},
-				loadChildren: () => import('./modules/task/pages/tasks/tasks.module').then(m => m.TasksModule)
-			}, 
+				loadChildren: () =>
+					import('./modules/task/pages/tasks/tasks.module').then(
+						(m) => m.TasksModule
+					)
+			},
 			{
 				path: 'projects',
 				canActivate: [MetaGuard],
@@ -159,7 +199,10 @@ const routes: Routes = [
 						title: 'Projects'
 					}
 				},
-				loadChildren: () => import('./modules/taskproject/pages/projects/projects.module').then(m => m.ProjectsModule)
+				loadChildren: () =>
+					import(
+						'./modules/taskproject/pages/projects/projects.module'
+					).then((m) => m.ProjectsModule)
 			},
 			{
 				path: 'profile',
