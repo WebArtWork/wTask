@@ -11,6 +11,6 @@ export class ProjectsComponent {
 	get projects(): Taskproject[] {
 		return this._taskprojectService.taskprojects;
 	}
-
+	isMenuOpen = false
 	constructor(private _taskprojectService: TaskprojectService) {}
 }
