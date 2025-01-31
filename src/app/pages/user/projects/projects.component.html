@@ -35,7 +35,9 @@
 						*ngFor="let project of projects"
 						class="documents-main-row"
 					>
-						<app-project [project]="project"></app-project>
+						<a routerLink="/project/{{project._id}}">
+							<app-project [project]="project"></app-project>
+						</a>
 					</div>
 				</div>
 			</div>
