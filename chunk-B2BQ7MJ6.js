@@ -1,0 +1,1 @@
+import{bb as o,eb as n,fb as a,gb as s,ib as f,r as c,u as t}from"./chunk-2AQNQRWY.js";var S=(()=>{class e extends n{constructor(r,i,m,p){super({name:"task"},r,i,m,p)}static{this.\u0275fac=function(i){return new(i||e)(t(s),t(a),t(f),t(o))}}static{this.\u0275prov=c({token:e,factory:e.\u0275fac,providedIn:"root"})}}return e})();export{S as a};
