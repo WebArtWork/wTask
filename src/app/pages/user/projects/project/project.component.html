@@ -1,6 +1,9 @@
-<div class="documents__title">
-    {{project.name}}
-</div>
-<div class="documents__description">
-    {{project.description}}
-</div>
+<a routerLink="/project/{{project._id}}">
+	<div class="documents__title">{{project.name}}</div>
+	<div class="documents__description">{{project.description}}</div>
+</a>
+<a routerLink="/minetasks/{{project._id}}" class="nav__burger-link">
+	<span class="material-icons">task</span>
+</a>
+<span class="material-icons">edit</span>
+<span class="material-icons">bin</span>

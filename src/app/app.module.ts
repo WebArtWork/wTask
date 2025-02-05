@@ -62,6 +62,19 @@ const routes: Routes = [
 		children: [
 			/* user */
 			{
+				path: 'minetasks',
+				canActivate: [MetaGuard],
+				data: {
+					meta: {
+						title: 'Tasks'
+					}
+				},
+				loadChildren: () =>
+					import('./pages/user/tasks/tasks.module').then(
+						(m) => m.TasksModule
+					)
+			},
+			{
 				path: 'project',
 				canActivate: [MetaGuard],
 				data: {
@@ -69,8 +82,11 @@ const routes: Routes = [
 						title: 'Project'
 					}
 				},
-				loadChildren: () => import('./pages/user/project/project.module').then(m => m.ProjectModule)
-			}, 
+				loadChildren: () =>
+					import('./pages/user/project/project.module').then(
+						(m) => m.ProjectModule
+					)
+			},
 			{
 				path: 'mineprojects',
 				canActivate: [MetaGuard],

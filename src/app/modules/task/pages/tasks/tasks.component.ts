@@ -119,7 +119,6 @@ export class TasksComponent {
 		private _core: CoreService,
 		private _router: Router
 	) {
-		this.setRows();
 
 		this._route.paramMap.subscribe((params) => {
 			this.project_id = params.get('project_id') || '';
@@ -129,6 +128,8 @@ export class TasksComponent {
 			this.sprint_id = params.get('sprint_id') || '';
 
 			this.tag_id = params.get('tag_id') || '';
+
+			this.setRows();
 		});
 	}
 

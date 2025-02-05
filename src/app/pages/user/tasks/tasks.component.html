@@ -32,11 +32,8 @@
 			</div>
 			<div class="documents-main">
 				<div class="documents-main-content">
-					<div
-						*ngFor="let project of projects"
-						class="documents-main-row"
-					>
-						<app-project [project]="project"></app-project>
+					<div *ngFor="let task of tasks" class="documents-main-row">
+						<app-task [task]="task" (load)="load()"></app-task>
 					</div>
 				</div>
 			</div>

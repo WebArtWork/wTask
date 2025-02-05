@@ -11,6 +11,76 @@
 					<span class="material-icons">folder</span>
 				</a>
 			</li>
+			<li class="nav__li">
+				<a
+					routerLinkActive="_activeLink"
+					(click)="showSidebar = false"
+					routerLink="/minetasks"
+					class="nav__a"
+				>
+					<span class="material-icons">task</span>
+				</a>
+			</li>
+			<li class="nav__li">
+				<a
+					routerLinkActive="_activeLink"
+					(click)="showSidebar = false"
+					routerLink="/minereleases"
+					class="nav__a"
+				>
+					<span class="material-icons">publish</span>
+				</a>
+			</li>
+			<li class="nav__li">
+				<a
+					routerLinkActive="_activeLink"
+					(click)="showSidebar = false"
+					routerLink="/minesprints"
+					class="nav__a"
+				>
+					<span class="material-icons">track_changes</span>
+				</a>
+			</li>
+			<li class="nav__li">
+				<a
+					routerLinkActive="_activeLink"
+					(click)="showSidebar = false"
+					routerLink="/minetags"
+					class="nav__a"
+				>
+					<span class="material-icons">label</span>
+				</a>
+			</li>
+			<li class="nav__li">
+				<a
+					routerLinkActive="_activeLink"
+					(click)="showSidebar = false"
+					routerLink="/minestories"
+					class="nav__a"
+				>
+					<span class="material-icons">checklist</span>
+				</a>
+			</li>
+			<li class="nav__li">
+				<a
+					routerLinkActive="_activeLink"
+					(click)="showSidebar = false"
+					routerLink="/minepages"
+					class="nav__a"
+				>
+					<span class="material-icons">view_agenda</span>
+				</a>
+			</li>
+			<li class="nav__li">
+				<a
+					routerLinkActive="_activeLink"
+					(click)="showSidebar = false"
+					routerLink="/minemodules"
+					class="nav__a"
+				>
+					<span class="material-icons">apps</span>
+				</a>
+			</li>
 			<li class="nav__li _burger" (click)="showSidebar = !showSidebar">
 				<a class="nav__toggle" [class._active]="showSidebar">
 					<span class="nav__toggle-line"></span>
