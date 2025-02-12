@@ -3,6 +3,7 @@ import { CoreModule } from 'src/app/core/core.module';
 import { TasksComponent } from './tasks.component';
 import { Routes, RouterModule } from '@angular/router';
 import { TaskComponent } from './task/task.component';
+import { SelectUserComponent } from 'src/app/modules/task/selectors/task/task-selector.component';
 
 const routes: Routes = [
 	{
@@ -16,7 +17,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-	imports: [RouterModule.forChild(routes), CoreModule],
+	imports: [RouterModule.forChild(routes), CoreModule, SelectUserComponent],
 	declarations: [TasksComponent, TaskComponent]
 })
 export class TasksModule {}

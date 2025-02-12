@@ -15,6 +15,14 @@
 			>
 				<div class="documents-sidebar-content">
 					<wbutton (click)="create()">Create</wbutton>
+
+					<taskproject-selector
+						[value]="project_id"
+						(wChange)="project_id = $event"
+					></taskproject-selector>
+
+					<wselect [items]="['cat', 'dog']"></wselect>
+
 					<!-- <div class="documents-sidebar__img">
 						<img src="assets/default.png" alt="" />
 					</div>

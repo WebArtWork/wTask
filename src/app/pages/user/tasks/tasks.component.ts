@@ -42,7 +42,7 @@ export class TasksComponent {
 
 				this._preCreate(created as Task);
 
-				this._taskService.create(created as Task).subscribe(()=>{
+				this._taskService.create(created as Task).subscribe(() => {
 					this.load();
 				});
 			}
