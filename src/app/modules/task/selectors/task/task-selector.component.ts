@@ -16,13 +16,13 @@ import { Task } from '../../interfaces/task.interface';
 	styleUrls: ['./task-selector.component.scss'],
 	imports: [SelectModule]
 })
-export class SelectUserComponent implements OnChanges {
+export class SelectTaskComponent implements OnChanges {
 	@Input() value: string;
 
 	@Output() wChange = new EventEmitter();
 
 	get items(): Task[] {
-		return this._taskService.tasks;
+		return this._taskService.getDocs();
 	}
 
 	constructor(private _taskService: TaskService) {}

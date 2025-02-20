@@ -34,10 +34,7 @@ export class TasksComponent {
 	create(): void {
 		this._form.modal<Task>(this.form, {
 			label: 'Create',
-			click: async (
-				created: unknown,
-				close: () => void
-			): Promise<void> => {
+			click: (created: unknown, close: () => void): void => {
 				close();
 
 				this._preCreate(created as Task);
