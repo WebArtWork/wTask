@@ -1,0 +1,1 @@
+var e={formId:"taskproject",title:"Taskproject",components:[{name:"Text",key:"name",focused:!0,fields:[{name:"Placeholder",value:"fill project title"},{name:"Label",value:"Title"}]},{name:"Text",key:"description",fields:[{name:"Placeholder",value:"fill project description"},{name:"Label",value:"Description"}]}]};export{e as a};
