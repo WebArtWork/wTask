@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { AlertService, CoreService } from 'wacom';
-import { TaskprojectService } from '../../services/taskproject.service';
-import { Taskproject } from '../../interfaces/taskproject.interface';
 import { FormService } from 'src/app/core/modules/form/form.service';
-import { TranslateService } from 'src/app/core/modules/translate/translate.service';
 import { FormInterface } from 'src/app/core/modules/form/interfaces/form.interface';
+import { TranslateService } from 'src/app/core/modules/translate/translate.service';
+import { AlertService, CoreService } from 'wacom';
 import { taskprojectFormComponents } from '../../formcomponents/taskproject.formcomponents';
+import { Taskproject } from '../../interfaces/taskproject.interface';
+import { TaskprojectService } from '../../services/taskproject.service';
 
 @Component({
 	templateUrl: './projects.component.html',
@@ -65,6 +65,12 @@ export class ProjectsComponent {
 				icon: 'task',
 				hrefFunc: (doc: Taskproject): string => {
 					return '/tasks/' + doc._id;
+				}
+			},
+			{
+				icon: 'build',
+				hrefFunc: (doc: Taskproject): string => {
+					return '/configurations/' + doc._id;
 				}
 			},
 			{

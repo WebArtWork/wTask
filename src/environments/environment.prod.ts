@@ -3,6 +3,11 @@ export const environment = {
 	production: true,
 	appId: 'test',
 	url: 'https://webart.work',
+	user: {
+		email: '',
+		password: '',
+		resetPin: null
+	},
 	meta: {
 		title: 'Web Art Work',
 		description:
